@@ -1,10 +1,10 @@
 # type: ignore[import]
-from connect import rdsConnect, neptuneConnect
+from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from sqlalchemy import inspect
-from customerSchema import Customer, Base
-from workerSchema import Worker, Base
-from rdsSession import createRdsSession, commitRds
+from models.customer import Customer, Base
+from models.worker import Worker, Base
+from utils.rdsSession import createRdsSession, commitRds
 import uuid
 
 class RDS:
@@ -127,6 +127,6 @@ class RDS:
                     commitRds(session)
 
 rds = RDS("Customer")
-rds.migrateCustomer()
+# rds.migrateCustomer()
 
 

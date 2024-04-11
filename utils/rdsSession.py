@@ -1,6 +1,6 @@
 # type: ignore[import]
 from sqlalchemy.orm import sessionmaker 
-from connect import rdsConnect
+from utils.connect import rdsConnect
 
 def createRdsSession():
     engine = rdsConnect()
