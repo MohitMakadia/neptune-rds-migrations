@@ -3,17 +3,17 @@ from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from sqlalchemy import inspect
 from models.customer import Customer, Base
-from models.worker import Worker, Base
 from utils.rdsSession import createRdsSession, commitRds
 import uuid
 
-class RDS:
+
+class Customer:
     
-    def __init__(self, tableName):
+    def __init__(self):
         self.engine = rdsConnect()
         self.neptune_engine = neptuneConnect()
         self.g = Graph().traversal().withRemote(self.neptune_engine)
-        self.table = tableName
+        self.table = 'Customer'
               
     def checkIfTableExists(self):
         inspector = inspect(self.engine)
@@ -21,7 +21,6 @@ class RDS:
             print(f'Table {self.table} exists.')
         else:
             print(f'Table {self.table} does not exist.')
-            self.createCustomerTable()
 
     def createCustomerTable(self):
         print(f'Creating {self.table} Table ...')
@@ -37,17 +36,18 @@ class RDS:
 
     def migrateCustomer(self):
         self.checkIfTableExists()
+        self.createCustomerTable()
         print(f'Starting Migration for {self.table} table ...')
-        vertedIds = self.g.V().hasLabel("customer").toList()
-        for vertedId in vertedIds:
-            if self.validate_uuid(vertedId.id):
-                customerValueMaps = self.g.V(vertedId).valueMap().toList()
+        vertexIds = self.g.V().hasLabel("customer").toList()
+        for vertexId in vertexIds:
+            if self.validate_uuid(vertexId.id):
+                customerValueMaps = self.g.V(vertexId).valueMap().toList()
                 for customerValueMap in customerValueMaps:
                     Base.metadata.bind = self.engine
                     session = createRdsSession()
                     try:
                         customer = Customer(
-                            customer_id = vertedId.id,
+                            customer_id = vertexId.id,
                             amount = customerValueMap.get("amount", [0])[0],
                             domain_language = customerValueMap.get("domain_language", [""])[0],
                             domain = customerValueMap.get("domain", [""])[0],
@@ -84,58 +84,7 @@ class RDS:
                         print(str(e))
                         session.close()
             else:
-                print(f'Invalid UUID Detected {vertedId.id} ... Skipping.')
+                print(f'Invalid UUID Detected {vertexId.id} ... Skipping.')
 
-    def migrateWorker(self):
-        self.checkIfTableExists()
-        with createRdsSession() as session:
-            vertedIds = self.g.V().hasLabel("worker").toList()
-            for vertedId in vertedIds:
-                if self.validate_uuid(vertedId.id):
-                    workerValueMaps = self.g.V(vertedId).valueMap().toList()
-                    for workerValueMap in workerValueMaps:
-                        Base.metadata.bind = self.engine
-                        session = createRdsSession()
-                        try:
-                            worker = Worker(
-                                worker_id = vertedId.id,
-                                amount = workerValueMap.get("amount", [0])[0],
-                                domain_language = workerValueMap.get("domain_language", [""])[0],
-                                domain = workerValueMap.get("domain", [""])[0],
-                                email = workerValueMap.get("email", [""])[0],
-                                experience = workerValueMap.get("experience", [0])[0],
-                                first_name = workerValueMap.get("first_name", [""])[0],
-                                internal_score = workerValueMap.get("internal_score", [0])[0],
-                                is_online = workerValueMap.get("is_online", [False])[0],
-                                is_suspended = workerValueMap.get("is_suspended", [False])[0],
-                                last_login = workerValueMap.get("last_login", [0])[0],
-                                location_address = workerValueMap.get("location_address", [""])[0],
-                                location_city = workerValueMap.get("location_city", [""])[0],
-                                location_country = workerValueMap.get("location_country", [""])[0],
-                                location_longitude = workerValueMap.get("location_longitude", [0.0])[0],
-                                location_latitude = workerValueMap.get("location_latitude", [0.0])[0],
-                                location_place_id = workerValueMap.get("location_place_id", [""])[0],
-                                location_slug = workerValueMap.get("location_slug", [""])[0],
-                                max_distance = workerValueMap.get("max_distance", [0])[0],
-                                personal_note = workerValueMap.get("personal_note", [""])[0],
-                                profile_picture = workerValueMap.get("profile_picture", [""])[0],
-                                published = workerValueMap.get("published", [False])[0],
-                                registered_date = workerValueMap.get("registered_date", [0])[0],
-                                score = workerValueMap.get("score", [0])[0],
-                                user_alert = workerValueMap.get("user_alert", [False])[0],
-                                votes = workerValueMap.get("votes", [0])[0],
-                                )
-                            session.add(worker)
-                            commitRds(session)
-                        except Exception as e:
-                            print(str(e))
-                            session.close()
-
-                else:
-                    print(f'Invalid UUID Detected {vertedId.id} ... Skipping.')
-
-
-rds = RDS("Worker")
-rds.migrateWorker()
-
-
+customer = Customer()
+customer.migrateCustomer()
