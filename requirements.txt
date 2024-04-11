@@ -1,0 +1,5 @@
+python-dotenv
+sqlalchemy
+gremlinpython
+# sudo apt-get install build-dep python-psycopg2
+psycopg2-binary  
