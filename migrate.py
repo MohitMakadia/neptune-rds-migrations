@@ -136,6 +136,6 @@ class RDS:
 
 
 rds = RDS("Worker")
-# rds.migrateCustomer()
+rds.migrateWorker()
 
 
