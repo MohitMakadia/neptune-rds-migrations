@@ -10,7 +10,7 @@ engine = rdsConnect()
 
 class Customer(Base):
     
-    __tablename__ = 'Customer'
+    __tablename__ = "Customer"
 
     id = Column(Integer, primary_key=True)
     customer_id = Column(PGUUID(as_uuid=True))

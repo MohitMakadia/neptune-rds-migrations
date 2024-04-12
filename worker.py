@@ -1,18 +1,18 @@
 # type: ignore[import]
-from models.worker import Worker, Base
+from models.Worker import Worker, Base
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from sqlalchemy import inspect
 from utils.rdsSession import createRdsSession, commitRds
 import uuid
 
-class Worker:
+class migrateWorker:
     
     def __init__(self):
         self.engine = rdsConnect()
         self.neptune_engine = neptuneConnect()
         self.g = Graph().traversal().withRemote(self.neptune_engine)
-        self.table = 'Worker'
+        self.table = "Worker"
               
     def checkIfTableExists(self):
         inspector = inspect(self.engine)
@@ -24,7 +24,7 @@ class Worker:
     def createWorkerTable(self):
         print(f'Creating {self.table} Table ...')
         Worker.tableLaunch()
-        print(f'{self.table} Created')
+        print(f'{self.table} Table Created')
 
 
     def validate_uuid(self, uuid_str):
@@ -37,6 +37,7 @@ class Worker:
     def migrateWorker(self):
         self.checkIfTableExists()
         self.createWorkerTable()
+        print(f'Starting Migration for {self.table} table ...')
         with createRdsSession() as session:
             vertexIds = self.g.V().hasLabel("worker").toList()
             for vertexId in vertexIds:
@@ -83,5 +84,5 @@ class Worker:
                 else:
                     print(f'Invalid UUID Detected {vertexId.id} ... Skipping.')
 
-worker = Worker()
+worker = migrateWorker()
 worker.migrateWorker()

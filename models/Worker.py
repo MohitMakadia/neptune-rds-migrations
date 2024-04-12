@@ -10,7 +10,7 @@ engine = rdsConnect()
 
 class Worker(Base):
     
-    __tablename__ = 'Worker'
+    __tablename__ = "Worker"
 
     id = Column(Integer, primary_key=True)
     worker_id = Column(PGUUID(as_uuid=True))

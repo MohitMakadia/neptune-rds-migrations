@@ -1,19 +1,19 @@
 # type: ignore[import]
+from models.Customer import Customer, Base
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from sqlalchemy import inspect
-from models.customer import Customer, Base
 from utils.rdsSession import createRdsSession, commitRds
 import uuid
 
 
-class Customer:
+class migrateCustomer:
     
     def __init__(self):
         self.engine = rdsConnect()
         self.neptune_engine = neptuneConnect()
         self.g = Graph().traversal().withRemote(self.neptune_engine)
-        self.table = 'Customer'
+        self.table = "Customer"
               
     def checkIfTableExists(self):
         inspector = inspect(self.engine)
@@ -25,7 +25,7 @@ class Customer:
     def createCustomerTable(self):
         print(f'Creating {self.table} Table ...')
         Customer.tableLaunch()
-        print(f'{self.table} Created')
+        print(f'{self.table} Table Created')
 
     def validate_uuid(self, uuid_str):
         try:
@@ -86,5 +86,5 @@ class Customer:
             else:
                 print(f'Invalid UUID Detected {vertexId.id} ... Skipping.')
 
-customer = Customer()
+customer = migrateCustomer()
 customer.migrateCustomer()
