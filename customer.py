@@ -3,9 +3,8 @@ from models.Customer import Customer, Base
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from sqlalchemy import inspect
-from utils.rdsSession import createRdsSession, commitRds
-import uuid
-
+from utils.session import createRdsSession, commitRds
+from utils.validation import validate_uuid, checkIfTableExists
 
 class migrateCustomer:
     
@@ -15,39 +14,25 @@ class migrateCustomer:
         self.g = Graph().traversal().withRemote(self.neptune_engine)
         self.table = "Customer"
               
-    def checkIfTableExists(self):
-        inspector = inspect(self.engine)
-        if self.table in inspector.get_table_names():
-            print(f'Table {self.table} exists.')
-        else:
-            print(f'Table {self.table} does not exist.')
-
     def createCustomerTable(self):
         print(f'Creating {self.table} Table ...')
         Customer.tableLaunch()
         print(f'{self.table} Table Created')
 
-    def validate_uuid(self, uuid_str):
-        try:
-            uuid.UUID(uuid_str)
-            return True
-        except ValueError:
-            return False
-
     def migrateCustomer(self):
-        self.checkIfTableExists()
+        checkIfTableExists(self.engine, self.table)
         self.createCustomerTable()
         print(f'Starting Migration for {self.table} table ...')
         vertexIds = self.g.V().hasLabel("customer").toList()
         for vertexId in vertexIds:
-            if self.validate_uuid(vertexId.id):
+            if validate_uuid(vertexId.id):
                 customerValueMaps = self.g.V(vertexId).valueMap().toList()
                 for customerValueMap in customerValueMaps:
                     Base.metadata.bind = self.engine
                     session = createRdsSession()
                     try:
                         customer = Customer(
-                            customer_id = vertexId.id,
+                            id = vertexId.id,
                             amount = customerValueMap.get("amount", [0])[0],
                             domain_language = customerValueMap.get("domain_language", [""])[0],
                             domain = customerValueMap.get("domain", [""])[0],

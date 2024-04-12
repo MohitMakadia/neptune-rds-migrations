@@ -3,7 +3,7 @@ from sqlalchemy import Column, Integer, String, Boolean, Numeric
 from sqlalchemy.ext.declarative import declarative_base 
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from utils.connect import rdsConnect
-from utils.rdsSession import createRdsSession, commitRds
+from utils.session import createRdsSession, commitRds
 
 Base = declarative_base()
 engine = rdsConnect()
@@ -12,8 +12,7 @@ class Worker(Base):
     
     __tablename__ = "Worker"
 
-    id = Column(Integer, primary_key=True)
-    worker_id = Column(PGUUID(as_uuid=True))
+    worker_id = Column(PGUUID(as_uuid=True), primary_key=True)
     amount = Column(Integer())
     domain_language = Column(String(1000))
     domain = Column(String(1000))
@@ -39,11 +38,6 @@ class Worker(Base):
     score = Column(Integer())
     user_alert = Column(Boolean, default=False)
     votes = Column(Integer())
-
-
-    #verified_by = Column(PGUUID(as_uuid=True), ForeignKey('Verification.used_to_verify_id'))
-    #verifications = relationship("Verification",  back_populates="workers")
-
 
     def tableLaunch():
         Base.metadata.create_all(engine)

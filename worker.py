@@ -3,8 +3,8 @@ from models.Worker import Worker, Base
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from sqlalchemy import inspect
-from utils.rdsSession import createRdsSession, commitRds
-import uuid
+from utils.session import createRdsSession, commitRds
+from utils.validation import validate_uuid, checkIfTableExists
 
 class migrateWorker:
     
@@ -14,41 +14,26 @@ class migrateWorker:
         self.g = Graph().traversal().withRemote(self.neptune_engine)
         self.table = "Worker"
               
-    def checkIfTableExists(self):
-        inspector = inspect(self.engine)
-        if self.table in inspector.get_table_names():
-            print(f'Table {self.table} exists.')
-        else:
-            print(f'Table {self.table} does not exist.')
-
     def createWorkerTable(self):
         print(f'Creating {self.table} Table ...')
         Worker.tableLaunch()
         print(f'{self.table} Table Created')
 
-
-    def validate_uuid(self, uuid_str):
-        try:
-            uuid.UUID(uuid_str)
-            return True
-        except ValueError:
-            return False
-
     def migrateWorker(self):
-        self.checkIfTableExists()
+        checkIfTableExists(self.engine, self.table)
         self.createWorkerTable()
         print(f'Starting Migration for {self.table} table ...')
         with createRdsSession() as session:
             vertexIds = self.g.V().hasLabel("worker").toList()
             for vertexId in vertexIds:
-                if self.validate_uuid(vertexId.id):
+                if validate_uuid(vertexId.id):
                     workerValueMaps = self.g.V(vertexId).valueMap().toList()
                     for workerValueMap in workerValueMaps:
                         Base.metadata.bind = self.engine
                         session = createRdsSession()
                         try:
                             worker = Worker(
-                                worker_id = vertexId.id,
+                                id = vertexId.id,
                                 amount = workerValueMap.get("amount", [0])[0],
                                 domain_language = workerValueMap.get("domain_language", [""])[0],
                                 domain = workerValueMap.get("domain", [""])[0],
