@@ -1,5 +1,5 @@
 # type: ignore[import]
-from sqlalchemy import Column, Integer, String, Boolean, Numeric
+from sqlalchemy import Column, Integer, String, Boolean, Numeric, ForeignKey
 from sqlalchemy.ext.declarative import declarative_base 
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from utils.connect import rdsConnect
@@ -43,6 +43,8 @@ class Customer(Base):
     location_longitude = Column(Numeric(precision=10, scale=6))
     location_latitude = Column(Numeric(precision=10, scale=6))
     max_distance = Column(Integer())
+    #verified_by = Column(PGUUID(as_uuid=True), ForeignKey('Verification.used_to_verify_id'))
+    #verifications = relationship("Verification", back_populates="customers")
     
     def tableLaunch():
         Base.metadata.create_all(engine)

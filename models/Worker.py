@@ -40,6 +40,11 @@ class Worker(Base):
     user_alert = Column(Boolean, default=False)
     votes = Column(Integer())
 
+
+    #verified_by = Column(PGUUID(as_uuid=True), ForeignKey('Verification.used_to_verify_id'))
+    #verifications = relationship("Verification",  back_populates="workers")
+
+
     def tableLaunch():
         Base.metadata.create_all(engine)
         session = createRdsSession()
