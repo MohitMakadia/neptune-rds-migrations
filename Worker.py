@@ -1,3 +1,4 @@
+# type: ignore[import]
 from models.worker import Worker, Base
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
