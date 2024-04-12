@@ -1,9 +1,10 @@
+# type: ignore[import]
 from __future__  import print_function
 import os
 from dotenv import load_dotenv
-from sqlalchemy import create_engine # type: ignore
-from gremlin_python.structure.graph import Graph # type: ignore
-from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection # type: ignore
+from sqlalchemy import create_engine
+from gremlin_python.structure.graph import Graph
+from gremlin_python.driver.driver_remote_connection import DriverRemoteConnection
 
 load_dotenv()
 graph = Graph()

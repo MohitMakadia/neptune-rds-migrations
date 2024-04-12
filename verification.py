@@ -14,9 +14,9 @@ class MigrateVerification:
         self.g = Graph().traversal().withRemote(self.neptune_engine)
         self.table = "Verification"
               
-    def createVerificationTable(self):  # Correct method name
+    def createVerificationTable(self):
         print(f'Creating {self.table} Table ...')
-        Verification.tableLaunch()  # Call Verification.tableLaunch() to create the table
+        Verification.tableLaunch()
         print(f'{self.table} Table Created')
 
     def migrateVerification(self):
