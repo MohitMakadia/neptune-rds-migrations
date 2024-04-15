@@ -11,3 +11,7 @@ def createRdsSession():
 def commitRds(session):
     session.commit()
     session.close()
+
+def deployTable(Base, engine):
+    Base.metadata.create_all(engine)
+    return createRdsSession()

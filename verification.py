@@ -2,7 +2,6 @@
 from models.Verification import Verification, Base
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
-from sqlalchemy import inspect
 from utils.session import createRdsSession, commitRds
 from utils.validation import validate_uuid, checkIfTableExists
  

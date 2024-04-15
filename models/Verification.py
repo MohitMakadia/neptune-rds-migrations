@@ -15,7 +15,7 @@ class Verification(Base):
 
     id = Column(Integer, primary_key=True)
     verification_id = Column(PGUUID(as_uuid=True)) 
-    last_login = Column(Integer)
+    last_login = Column(Integer())
     type = Column(String(1000))
     used_to_verify = Column(PGUUID(as_uuid=True))
   
