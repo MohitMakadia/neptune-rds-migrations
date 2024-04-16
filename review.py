@@ -49,8 +49,10 @@ class MigrateReview:
                             evaluated=evaluated_id,
                             written_by=written_by_id,
                         )
+
                         session.add(review)
                         commitRds(session)
+                        
                     except Exception as e:
                         print(f'Failed due to {str(e)}')
                 else:

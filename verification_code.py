@@ -37,13 +37,15 @@ class MigrateVerificationCode:
                     session = createRdsSession()
                     verificationcode = VerificationCode(
                         verificationcode_id=vertexId,
-                        active= verificationCodeValueMap.get("is_online", [False])[0],
-                        created_timestamp=int(datetime.now().timestamp()),
-                        person_id=verificationCodeValueMap.get("person_id", [""])[0],
+                        active= verificationCodeValueMap.get("is_online", [None])[0],
+                        created_timestamp= verificationCodeValueMap.get("created_timestamp", [None])[0],
+                        person_id=verificationCodeValueMap.get("person_id", [None])[0],
                         
                     )
+
                     session.add(verificationcode)
                     commitRds(session)
+                    
                 except Exception as e:
                     print(f'Failed due to {str(e)}')
                 

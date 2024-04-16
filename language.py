@@ -4,7 +4,7 @@ from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from sqlalchemy import inspect
 from utils.session import createRdsSession, commitRds
-from utils.validation import validate_uuid , checkIfTableExists
+from utils.validation import validate_uuid
 
 class MigrateLanguage:
     
@@ -21,17 +21,16 @@ class MigrateLanguage:
         else:
             print(f'Table {self.table} does not exist.')
 
-    
     def createLanguageTable(self):
         print(f'Creating {self.table} Table ...')
         Language.tableLaunch()
         print(f'{self.table} Table Created')
 
-
     def migratelanguage(self):
         self.checkIfTableExists()
         self.createLanguageTable()
         print(f'Starting Migration for {self.table} table ...')
+        
         with createRdsSession() as session:
             vertexIds = self.g.V().hasLabel("language").toList()
             for vertexId in vertexIds:
@@ -54,9 +53,6 @@ class MigrateLanguage:
                         print(f"Error migrating verification with ID {vertexId}: {str(e)}")
                 else:
                     print(f'Invalid UUID Detected {vertexId} ... Skipping.')
-
-
-
 
 migrate_language = MigrateLanguage()
 migrate_language.migratelanguage() 

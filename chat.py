@@ -4,9 +4,7 @@ from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from utils.session import createRdsSession, commitRds
 from utils.validation import validate_uuid, checkIfTableExists
-from datetime import datetime
 
- 
 class MigrateChat:
     def __init__(self):
         self.engine = rdsConnect()
@@ -45,15 +43,17 @@ class MigrateChat:
                     try:
                         session = createRdsSession()
                         chat = Chat(
-                            chat_id=vertexId,
-                            blocked=chatValueMap.get("blocked", [False])[0],
-                            last_login=chatValueMap.get("last_login", [0])[0],
-                            has_participant=has_participant_id,
-                            consists_of=consists_of_id,
-                            created_timestamp=int(datetime.now().timestamp())
+                            chat_id = vertexId,
+                            blocked = chatValueMap.get("blocked", [None])[0],
+                            last_login = chatValueMap.get("last_login", [None])[0],
+                            has_participant = has_participant_id,
+                            consists_of = consists_of_id,
+                            created_timestamp = chatValueMap.get("created_timestamp", [None])[0]
                         )
+                        
                         session.add(chat)
                         commitRds(session)
+                    
                     except Exception as e:
                         print(f'Failed due to {str(e)}')
                 else:

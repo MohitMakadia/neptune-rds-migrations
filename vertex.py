@@ -17,7 +17,6 @@ class MigrateVertex:
         Vertex.tableLaunch()
         print(f'{self.table} Table Created')
 
-
     def migrateVertex(self):
         checkIfTableExists(self.engine, self.table)
         self.createVertexTable()

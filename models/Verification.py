@@ -1,16 +1,14 @@
-from sqlalchemy import Column, Integer, String, Boolean, Numeric , ForeignKey
+from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base 
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from utils.connect import rdsConnect
 from utils.session import createRdsSession, commitRds
-from sqlalchemy.orm import relationship
-
 
 Base = declarative_base()
 engine = rdsConnect()
 
-
 class Verification(Base):
+    
     __tablename__ = "Verification"
 
     id = Column(Integer, primary_key=True)
