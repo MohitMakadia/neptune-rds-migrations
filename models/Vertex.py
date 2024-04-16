@@ -15,16 +15,13 @@ engine = rdsConnect()
 
 
 
-class Chat(Base):
-    __tablename__ = "Chat"
+class Vertex(Base):
+    __tablename__ = "Vertex"
 
     id = Column(Integer, primary_key=True)
-    chat_id  = Column(PGUUID(as_uuid=True))  #property id 
-    blocked = Column(Boolean, default=False)
-    created_timestamp = Column(Integer())
-    last_login = Column(Integer()) 
-    has_participant = Column(PGUUID(as_uuid=True))  #out vertex id 
-    consists_of = Column(PGUUID(as_uuid=True))
+    vertex_id  = Column(PGUUID(as_uuid=True))  #property id 
+    last_login = Column(Integer())
+    
 
     def tableLaunch():
         commitRds(deployTable(Base, engine))
