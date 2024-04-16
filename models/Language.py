@@ -7,16 +7,17 @@ from utils.session import createRdsSession, commitRds
 Base = declarative_base()
 engine = rdsConnect()
 
-class Verification(Base):
-    
-    __tablename__ = "Verification"
+class Language(Base):
+
+    __tablename__ = 'Language'
 
     id = Column(Integer, primary_key=True)
-    verification_id = Column(PGUUID(as_uuid=True)) 
+    language_id = Column(PGUUID(as_uuid=True))
+    code = Column(String)
     last_login = Column(Integer())
-    type = Column(String(1000))
-    used_to_verify = Column(PGUUID(as_uuid=True))
-  
+    name = Column(String) 
+    spoken_by = Column(PGUUID(as_uuid=True)) 
+
     def tableLaunch():
         Base.metadata.create_all(engine)
         session = createRdsSession()
