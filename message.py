@@ -36,10 +36,10 @@ class migrateMessage:
                             session = createRdsSession()
                             message = Message(
                                 message_id = vertexId,
-                                content = messageValueMap.get("content", [""])[0],
-                                last_login = messageValueMap.get("last_login", [0])[0],
-                                seen = messageValueMap.get("seen", ["False"])[0],
-                                sent_timestamp = messageValueMap.get("sent_timestamp", [0])[0],
+                                content = messageValueMap.get("content", [None])[0],
+                                last_login = messageValueMap.get("last_login", [None])[0],
+                                seen = messageValueMap.get("seen", [None])[0],
+                                sent_timestamp = messageValueMap.get("sent_timestamp", [None])[0],
                                 authored_by = None,
                                 addressed_to = None,
                                 is_part_of = None

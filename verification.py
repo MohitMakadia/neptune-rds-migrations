@@ -33,8 +33,8 @@ class MigrateVerification:
                             outVertexs = self.g.V(vertexId.id).out().toList()
                             for outVertex in outVertexs:
                                 verification = Verification(
-                                    last_login = verificationValueMap.get("last_login", [0])[0],
-                                    type = verificationValueMap.get("type", [""])[0],
+                                    last_login = verificationValueMap.get("last_login", [None])[0],
+                                    type = verificationValueMap.get("type", [None])[0],
                                     used_to_verify = outVertex.id,
                                     verification_id = vertexId.id
                                 )

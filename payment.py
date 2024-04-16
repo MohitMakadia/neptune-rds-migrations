@@ -35,15 +35,15 @@ class migratePayment:
                         session = createRdsSession()
                         payment = Payment(
                             id = vertexId,
-                            created_at = paymentValueMap.get("created_at", [0])[0],
-                            currency = paymentValueMap.get("currency", [""])[0],
-                            current_status = paymentValueMap.get("current_status", [""])[0],
-                            last_login = paymentValueMap.get("last_login", [0])[0],
-                            latitude = paymentValueMap.get("latitude", [0.0])[0],
-                            longitute = paymentValueMap.get("longitude", [0.0])[0],
-                            place_id = paymentValueMap.get("place_id", [""])[0],
-                            updated_at = paymentValueMap.get("updated_at", [0])[0],
-                            value = paymentValueMap.get("value", [0])[0],
+                            created_at = paymentValueMap.get("created_at", [None])[0],
+                            currency = paymentValueMap.get("currency", [None])[0],
+                            current_status = paymentValueMap.get("current_status", [None])[0],
+                            last_login = paymentValueMap.get("last_login", [None])[0],
+                            latitude = paymentValueMap.get("latitude", [None])[0],
+                            longitute = paymentValueMap.get("longitude", [None])[0],
+                            place_id = paymentValueMap.get("place_id", [None])[0],
+                            updated_at = paymentValueMap.get("updated_at", [None])[0],
+                            value = paymentValueMap.get("value", [None])[0],
                             issued_by = outVertex.id
                         )
 

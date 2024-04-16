@@ -36,7 +36,7 @@ class MigrateVertex:
                         session = createRdsSession()
                         vertex = Vertex(
                             vertex_id=vertexId,
-                            last_login = vertexValueMap.get("last_login", [0])[0],
+                            last_login = vertexValueMap.get("last_login", [None])[0],
                         )
                         session.add(vertex)
                         commitRds(session)

@@ -2,10 +2,8 @@
 from models.Verification_Code import VerificationCode, Base
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
-from sqlalchemy import inspect
 from utils.session import createRdsSession, commitRds
-from utils.validation import validate_uuid, checkIfTableExists
-from datetime import datetime
+from utils.validation import checkIfTableExists
 class MigrateVerificationCode:
     
     def __init__(self):

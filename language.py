@@ -42,9 +42,9 @@ class MigrateLanguage:
                             for outVertex in outVertexs:
                                 language = Language(
                                     language_id=vertexId.id,
-                                    code=languageValueMap.get("code", ""),
-                                    last_login=languageValueMap.get("last_login", [0])[0],
-                                    name=languageValueMap.get("name", [0])[0],
+                                    code=languageValueMap.get("code", [None])[0],
+                                    last_login=languageValueMap.get("last_login", [None])[0],
+                                    name=languageValueMap.get("name", [None])[0],
                                     spoken_by=outVertex.id,
                                 )
                                 session.add(language)

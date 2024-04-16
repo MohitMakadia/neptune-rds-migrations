@@ -44,8 +44,8 @@ class MigrateReview:
                         session = createRdsSession()
                         review = Review(
                             review_id=vertexId,
-                            score=reviewValueMap.get("score", [0])[0],
-                            text=reviewValueMap.get("text", [""])[0],
+                            score=reviewValueMap.get("score", [None])[0],
+                            text=reviewValueMap.get("text", [None])[0],
                             evaluated=evaluated_id,
                             written_by=written_by_id,
                         )

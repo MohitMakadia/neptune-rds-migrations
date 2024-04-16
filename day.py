@@ -36,9 +36,9 @@ class migrateDay:
                             session = createRdsSession()
                             currency = Day(
                                 day_id = vertexId,
-                                day_name = daysValueMap.get("day_name", [""])[0],
-                                day_of_week = daysValueMap.get("day_of_week", [-1])[0],
-                                last_login = daysValueMap.get("last_login", [0])[0],
+                                day_name = daysValueMap.get("day_name", [None])[0],
+                                day_of_week = daysValueMap.get("day_of_week", [None])[0],
+                                last_login = daysValueMap.get("last_login", [None])[0],
                                 is_working_day_for = outVertex.id
                             )
                             session.add(currency)

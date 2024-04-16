@@ -36,10 +36,10 @@ class migrateCurrency:
                             session = createRdsSession()
                             currency = Currency(
                                 currency_id = vertexId,
-                                code = currencyValueMap.get("code", [""])[0],
-                                country = currencyValueMap.get("country", [""])[0],
-                                last_login = currencyValueMap.get("last_login", [0])[0],
-                                name = currencyValueMap.get("name", [""])[0],
+                                code = currencyValueMap.get("code", [None])[0],
+                                country = currencyValueMap.get("country", [None])[0],
+                                last_login = currencyValueMap.get("last_login", [None])[0],
+                                name = currencyValueMap.get("name", [None])[0],
                                 is_currency_for = outVertex.id
                             )
                             session.add(currency)

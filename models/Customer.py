@@ -12,7 +12,7 @@ class Customer(Base):
     
     __tablename__ = "Customer"
 
-    id = Column(PGUUID(as_uuid=True), primary_key=True)
+    id = Column(String, primary_key=True)
     amount = Column(Integer())
     domain_language = Column(String(1000))
     domain = Column(String(1000))
@@ -42,6 +42,21 @@ class Customer(Base):
     location_longitude = Column(Numeric(precision=10, scale=6))
     location_latitude = Column(Numeric(precision=10, scale=6))
     max_distance = Column(Integer())
+    verified_by = Column(String(1000))
+    participates_in = Column(String(1000))
+    authored = Column(String(1000))
+    speaks = Column(String(1000))
+    wants_to_pay_in = Column(String(1000))
+    wants_service_on = Column(String(1000))
+    favored_by = Column(String(1000))
+    receives = Column(String(1000))
+    issued = Column(String(1000))
+    favors = Column(String(1000))
+    is_evaluated_by = Column(String(1000))
+    wrote = Column(String(1000))
+    wants_payment_in = Column(String(1000))
+    works_on = Column(String(1000))
+    requires_handling =Column(String(1000))
     
     def tableLaunch():
         Base.metadata.create_all(engine)
