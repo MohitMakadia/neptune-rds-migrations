@@ -19,8 +19,6 @@ class VerificationCode(Base):
     created_timestamp = Column(Integer())
     person_id = Column(String(1000))    
     
-
-
     def tableLaunch():
         Base.metadata.create_all(engine)
         session = createRdsSession()
