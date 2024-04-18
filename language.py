@@ -31,28 +31,29 @@ class MigrateLanguage:
         self.createLanguageTable()
         print(f'Starting Migration for {self.table} table ...')
         
-        with createRdsSession() as session:
-            vertexIds = self.g.V().hasLabel("language").toList()
-            for vertexId in vertexIds:
-                if validate_uuid(vertexId.id):
-                    languageValueMaps = self.g.V(vertexId).valueMap().toList()
-                    try:                        
-                        for languageValueMap in languageValueMaps:
-                            outVertexs = self.g.V(vertexId.id).out().toList()
-                            for outVertex in outVertexs:
-                                language = Language(
-                                    language_id=vertexId.id,
-                                    code=languageValueMap.get("code", [None])[0],
-                                    last_login=languageValueMap.get("last_login", [None])[0],
-                                    name=languageValueMap.get("name", [None])[0],
-                                    spoken_by=outVertex.id,
-                                )
-                                session.add(language)
-                                commitRds(session)
-                    except Exception as e:
-                        print(f"Error migrating verification with ID {vertexId}: {str(e)}")
-                else:
-                    print(f'Invalid UUID Detected {vertexId} ... Skipping.')
+        vertexIds = self.g.V().hasLabel("language").toList()
+        for vertexId in vertexIds:
+            session = createRdsSession()
+            # if validate_uuid(vertexId.id):
+            languageValueMaps = self.g.V(vertexId).valueMap().toList()
+            try:                        
+                for languageValueMap in languageValueMaps:
+                    outVertexs = self.g.V(vertexId.id).out().toList()
+                    for outVertex in outVertexs:
+                        language = Language(
+                            language_id=vertexId.id,
+                            code=languageValueMap.get("code", [None])[0],
+                            last_login=languageValueMap.get("last_login", [None])[0],
+                            name=languageValueMap.get("name", [None])[0],
+                            spoken_by=outVertex.id,
+                        )
+                        
+                        session.add(language)
+                        commitRds(session)
+            except Exception as e:
+                print(f"Error migrating verification with ID {vertexId}: {str(e)}")
+            # else:
+            #     print(f'Invalid UUID Detected {vertexId} ... Skipping.')
 
 migrate_language = MigrateLanguage()
 migrate_language.migratelanguage() 

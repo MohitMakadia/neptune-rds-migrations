@@ -12,7 +12,8 @@ class Worker(Base):
     
     __tablename__ = "Worker"
 
-    worker_id = Column(PGUUID(as_uuid=True), primary_key=True)
+    id = Column(Integer(), primary_key=True)
+    worker_id = Column(String(255))
     amount = Column(Integer())
     domain_language = Column(String(1000))
     domain = Column(String(1000))
@@ -38,6 +39,21 @@ class Worker(Base):
     score = Column(Integer())
     user_alert = Column(Boolean, default=False)
     votes = Column(Integer())
+    speaks = Column(String(100))
+    verified_by = Column(String(100))
+    wants_payment_in = Column(String(100))
+    works_on = Column(String(100))
+    participates_in = Column(String(100))
+    receives = Column(String(100))
+    favored_by = Column(String(100))
+    authored = Column(String(100))
+    wrote = Column(String(100))
+    is_evaluated_by = Column(String(100))
+    blocked_by = Column(String(100))
+    issued = Column(String(100))
+    favors = Column(String(100))
+    wants_to_pay_in = Column(String(100))
+    wants_service_on = Column(String(100))
 
     def tableLaunch():
         Base.metadata.create_all(engine)

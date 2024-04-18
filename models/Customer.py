@@ -12,7 +12,8 @@ class Customer(Base):
     
     __tablename__ = "Customer"
 
-    id = Column(String, primary_key=True)
+    id = Column(Integer(), primary_key=True)
+    customer_id = Column(String(255))
     amount = Column(Integer())
     domain_language = Column(String(1000))
     domain = Column(String(1000))

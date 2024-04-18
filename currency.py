@@ -27,27 +27,27 @@ class migrateCurrency:
         while True:
             try:
                 vertexId = next(vertexIterate)
-                if validate_uuid(vertexId):
-                    Base.metadata.bind = self.engine
-                    currencyValueMap = self.g.V(vertexId).valueMap().toList()[0]
-                    outVertexs = self.g.V(vertexId).out().toList()
-                    for outVertex in outVertexs:
-                        try:
-                            session = createRdsSession()
-                            currency = Currency(
-                                currency_id = vertexId,
-                                code = currencyValueMap.get("code", [None])[0],
-                                country = currencyValueMap.get("country", [None])[0],
-                                last_login = currencyValueMap.get("last_login", [None])[0],
-                                name = currencyValueMap.get("name", [None])[0],
-                                is_currency_for = outVertex.id
-                            )
-                            session.add(currency)
-                            commitRds(session)
-                        except Exception as e:
-                            print(f'Failed due to {str(e)}')
-                else:
-                    print(f'Invalid UUID Detected {vertexId} ... Skipping.')
+                #if validate_uuid(vertexId):
+                Base.metadata.bind = self.engine
+                currencyValueMap = self.g.V(vertexId).valueMap().toList()[0]
+                outVertexs = self.g.V(vertexId).out().toList()
+                for outVertex in outVertexs:
+                    try:
+                        session = createRdsSession()
+                        currency = Currency(
+                            currency_id = vertexId,
+                            code = currencyValueMap.get("code", [None])[0],
+                            country = currencyValueMap.get("country", [None])[0],
+                            last_login = currencyValueMap.get("last_login", [None])[0],
+                            name = currencyValueMap.get("name", [None])[0],
+                            is_currency_for = outVertex.id
+                        )
+                        session.add(currency)
+                        commitRds(session)
+                    except Exception as e:
+                        print(f'Failed due to {str(e)}')
+                # else:
+                #     print(f'Invalid UUID Detected {vertexId} ... Skipping.')
             except StopIteration:
                 break
                 

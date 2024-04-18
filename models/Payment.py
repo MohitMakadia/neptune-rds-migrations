@@ -22,7 +22,9 @@ class Payment(Base):
     place_id = Column(String(200))
     updated_at = Column(Integer())
     value = Column(Integer())
-    issued_by = Column(PGUUID(as_uuid=True))
+    issued_by = Column(String(100))
+
+    #issued_by = Column(PGUUID(as_uuid=True))
 
     def tableLaunch():
         commitRds(deployTable(Base, engine))

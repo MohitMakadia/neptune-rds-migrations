@@ -12,11 +12,14 @@ class Language(Base):
     __tablename__ = 'Language'
 
     id = Column(Integer, primary_key=True)
-    language_id = Column(PGUUID(as_uuid=True))
+    language_id = Column(String(255))
     code = Column(String)
     last_login = Column(Integer())
     name = Column(String) 
-    spoken_by = Column(PGUUID(as_uuid=True)) 
+    spoken_by = Column(String(255))
+
+    # language_id = Column(PGUUID(as_uuid=True))
+    # spoken_by = Column(PGUUID(as_uuid=True)) 
 
     def tableLaunch():
         Base.metadata.create_all(engine)
