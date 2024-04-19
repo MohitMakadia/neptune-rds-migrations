@@ -28,35 +28,35 @@ class MigrateReview:
         while True:
             try:
                 vertexId = next(vertexIterate)
-                if validate_uuid(vertexId):
-                    Base.metadata.bind = self.engine
-                    reviewValueMap = self.g.V(vertexId).valueMap().toList()[0]
+                # if validate_uuid(vertexId):
+                Base.metadata.bind = self.engine
+                reviewValueMap = self.g.V(vertexId).valueMap().toList()[0]
 
-                    # Query for evaluated vertex
-                    evaluated_vertex = self.g.V(vertexId).out("evaluated").next()
-                    evaluated_id = evaluated_vertex.id if evaluated_vertex is not None else None
+                # Query for evaluated vertex
+                evaluated_vertex = self.g.V(vertexId).out("evaluated").next()
+                evaluated_id = evaluated_vertex.id if evaluated_vertex is not None else None
 
-                    # Query for written_by vertex
-                    written_by_vertex = self.g.V(vertexId).out("written_by").next()
-                    written_by_id = written_by_vertex.id if written_by_vertex is not None else None
+                # Query for written_by vertex
+                written_by_vertex = self.g.V(vertexId).out("written_by").next()
+                written_by_id = written_by_vertex.id if written_by_vertex is not None else None
 
-                    try:
-                        session = createRdsSession()
-                        review = Review(
-                            review_id=vertexId,
-                            score=reviewValueMap.get("score", [None])[0],
-                            text=reviewValueMap.get("text", [None])[0],
-                            evaluated=evaluated_id,
-                            written_by=written_by_id,
-                        )
+                try:
+                    session = createRdsSession()
+                    review = Review(
+                        review_id=vertexId,
+                        score=reviewValueMap.get("score", [None])[0],
+                        text=reviewValueMap.get("text", [None])[0],
+                        evaluated=evaluated_id,
+                        written_by=written_by_id,
+                    )
 
-                        session.add(review)
-                        commitRds(session)
-                        
-                    except Exception as e:
-                        print(f'Failed due to {str(e)}')
-                else:
-                    print(f'Invalid UUID Detected {vertexId} ... Skipping.')
+                    session.add(review)
+                    commitRds(session)
+                    
+                except Exception as e:
+                    print(f'Failed due to {str(e)}')
+                # else:
+                #     print(f'Invalid UUID Detected {vertexId} ... Skipping.')
             except StopIteration:
                 break
 

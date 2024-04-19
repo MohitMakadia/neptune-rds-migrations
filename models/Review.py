@@ -12,11 +12,14 @@ class Review(Base):
     __tablename__ = "Review"
 
     id = Column(Integer, primary_key=True)
-    review_id  = Column(PGUUID(as_uuid=True))
+    review_id  = Column(String(255))
     score = Column(Integer())
     text = Column(String(1000))
-    evaluated = Column(PGUUID(as_uuid=True))
-    written_by = Column(PGUUID(as_uuid=True))
+    evaluated = Column(String(255))
+    written_by = Column(String(255))
 
+    # review_id  = Column(PGUUID(as_uuid=True))
+    # evaluated = Column(PGUUID(as_uuid=True))
+    # written_by = Column(PGUUID(as_uuid=True))
     def tableLaunch():
         commitRds(deployTable(Base, engine))

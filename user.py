@@ -29,26 +29,26 @@ class MigrateUser:
         while True:
             try:
                 vertexId = next(vertexIterate)
-                if validate_uuid(vertexId):
-                    Base.metadata.bind = self.engine
-                    userValueMap = self.g.V(vertexId).valueMap().toList()[0]
+                #if validate_uuid(vertexId):
+                Base.metadata.bind = self.engine
+                userValueMap = self.g.V(vertexId).valueMap().toList()[0]
 
-                    # Query for the "favors" vertex
-                    favors_vertex = self.g.V(vertexId).out("favors").next()  
-                    favors_id = favors_vertex.id if favors_vertex is not None else None
+                # Query for the "favors" vertex
+                favors_vertex = self.g.V(vertexId).out("favors").next()  
+                favors_id = favors_vertex.id if favors_vertex is not None else None
 
-                    try:
-                        session = createRdsSession()
-                        user = User(
-                            user_id=vertexId,
-                            favors=favors_id,
-                        )
-                        session.add(user)
-                        commitRds(session)
-                    except Exception as e:
-                        print(f'Failed due to {str(e)}')
-                else:
-                    print(f'Invalid UUID Detected {vertexId} ... Skipping.')
+                try:
+                    session = createRdsSession()
+                    user = User(
+                        user_id=vertexId,
+                        favors=favors_id,
+                    )
+                    session.add(user)
+                    commitRds(session)
+                except Exception as e:
+                    print(f'Failed due to {str(e)}')
+                # else:
+                #     print(f'Invalid UUID Detected {vertexId} ... Skipping.')
             except StopIteration:
                 break
 

@@ -27,37 +27,37 @@ class migrateMessage:
         while True:
             try:
                 vertexId = next(vertexIterate)
-                if validate_uuid(vertexId):
-                    Base.metadata.bind = self.engine
-                    messageValueMap = self.g.V(vertexId).valueMap().toList()[0]
-                    outEdges = self.g.V(vertexId).outE().toList()
-                    for edge in outEdges:
-                        try:
-                            session = createRdsSession()
-                            message = Message(
-                                message_id = vertexId,
-                                content = messageValueMap.get("content", [None])[0],
-                                last_login = messageValueMap.get("last_login", [None])[0],
-                                seen = messageValueMap.get("seen", [None])[0],
-                                sent_timestamp = messageValueMap.get("sent_timestamp", [None])[0],
-                                authored_by = None,
-                                addressed_to = None,
-                                is_part_of = None
-                            )
-                            if edge.label == "authored_by":
-                                message.authored_by = edge.id
-                            elif edge.label == "addressed_to":
-                                message.addressed_to = edge.id
-                            elif edge.label == "is_part_of":
-                                message.is_part_of = edge.id
-                            
-                            session.add(message)
-                            commitRds(session)
+                # if validate_uuid(vertexId):
+                Base.metadata.bind = self.engine
+                messageValueMap = self.g.V(vertexId).valueMap().toList()[0]
+                outEdges = self.g.V(vertexId).outE().toList()
+                for edge in outEdges:
+                    try:
+                        session = createRdsSession()
+                        message = Message(
+                            message_id = vertexId,
+                            content = messageValueMap.get("content", [None])[0],
+                            last_login = messageValueMap.get("last_login", [None])[0],
+                            seen = messageValueMap.get("seen", [None])[0],
+                            sent_timestamp = messageValueMap.get("sent_timestamp", [None])[0],
+                            authored_by = None,
+                            addressed_to = None,
+                            is_part_of = None
+                        )
+                        if edge.label == "authored_by":
+                            message.authored_by = edge.id
+                        elif edge.label == "addressed_to":
+                            message.addressed_to = edge.id
+                        elif edge.label == "is_part_of":
+                            message.is_part_of = edge.id
+                        
+                        session.add(message)
+                        commitRds(session)
 
-                        except Exception as e:
-                            print(f'Failed due to {str(e)}')  
-                else:
-                    print(f'Invalid UUID Detected {vertexId} ... Skipping.')
+                    except Exception as e:
+                        print(f'Failed due to {str(e)}')
+                # else:
+                #     print(f'Invalid UUID Detected {vertexId} ... Skipping.')
             except StopIteration:
                 break
                 
