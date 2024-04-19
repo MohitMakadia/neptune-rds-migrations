@@ -59,20 +59,20 @@ class migrateWorker:
                         score = workerValueMap.get("score", [0])[None],
                         user_alert = workerValueMap.get("user_alert", [None])[0],
                         votes = workerValueMap.get("votes", [None])[0],
-                        speaks = None
-                        verified_by = None
-                        wants_payment_in = None
-                        works_on = None
-                        participates_in = None
-                        receives = None
-                        favored_by = None
-                        authored = None
-                        wrote = None
-                        is_evaluated_by = None
-                        blocked_by = None
-                        issued = None
-                        favors = None
-                        wants_to_pay_in = None
+                        speaks = None,
+                        verified_by = None,
+                        wants_payment_in = None,
+                        works_on = None,
+                        participates_in = None,
+                        receives = None,
+                        favored_by = None,
+                        authored = None,
+                        wrote = None,
+                        is_evaluated_by = None,
+                        blocked_by = None,
+                        issued = None,
+                        favors = None,
+                        wants_to_pay_in = None,
                         wants_service_on = None
                         )
                     

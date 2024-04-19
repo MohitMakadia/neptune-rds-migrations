@@ -57,7 +57,7 @@ class Customer(Base):
     wrote = Column(String(1000))
     wants_payment_in = Column(String(1000))
     works_on = Column(String(1000))
-    requires_handling =Column(String(1000))
+    requires_handling = Column(String(1000))
     
     def tableLaunch():
         Base.metadata.create_all(engine)
