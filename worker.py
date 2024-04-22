@@ -33,7 +33,7 @@ class migrateWorker:
                 try:
                     outVertexId = str(edge).split("][")[1].split("->")[1][:-1]
                     worker = Worker(
-                        id = vertexId.id,
+                        worker_id = vertexId.id,
                         amount = workerValueMap.get("amount", [None])[0],
                         domain_language = workerValueMap.get("domain_language", [None])[0],
                         domain = workerValueMap.get("domain", [None])[0],
