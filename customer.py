@@ -25,7 +25,9 @@ class migrateCustomer:
         print(f'Starting Migration for {self.table} table ...')
         Base.metadata.bind = self.engine
         vertexIds = self.g.V().hasLabel("customer").toList()
+        session = createRdsSession()
         for vertexId in vertexIds:
+            
             customerValueMap = self.g.V(vertexId).valueMap().toList()[0]
             outEdges = self.g.V(vertexId).outE().toList()
             for edge in outEdges:

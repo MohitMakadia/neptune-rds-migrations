@@ -18,7 +18,8 @@ class Chat(Base):
     blocked = Column(Boolean, default=None)
     created_timestamp = Column(Integer())
     last_login = Column(Integer()) 
-    has_participant = Column(String(255))
+    has_participant_worker = Column(String(255))
+    has_participant_customer = Column(String(255))
     consists_of = Column(String(255))
 
     # chat_id  = Column(PGUUID(as_uuid=True))

@@ -13,11 +13,11 @@ class Day(Base):
     __tablename__ = "Day"
 
     id = Column(Integer, primary_key=True)
-    day_id = Column(PGUUID(as_uuid=True))
+    day_id = Column(String(255))
     day_name = Column(String(15))
     day_of_week = Column(Integer())
     last_login = Column(Integer())
-    is_working_day_for = Column(PGUUID(as_uuid=True))
+    is_working_day_for = Column(String(255))
 
     def tableLaunch():
         commitRds(deployTable(Base, engine))

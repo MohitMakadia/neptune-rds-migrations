@@ -11,7 +11,7 @@ class PartChunks:
         self.chunks = chunks
         
     def partChunks(self):
-        allVertexIds = [v.id for v in self.g.V().hasLabel('worker').toList()]
+        allVertexIds = [v.id for v in self.g.V().hasLabel('day').toList()]
         chunk_size = self.chunks
         chunks = {}
 
@@ -26,5 +26,5 @@ class PartChunks:
         with open("chunks/" + self.file_name, "w") as f:
             f.write(str(chunks))
 
-part_chunks = PartChunks("worker.txt", 200)
+part_chunks = PartChunks("day.txt", 500)
 part_chunks.partChunks()

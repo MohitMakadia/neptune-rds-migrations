@@ -21,45 +21,53 @@ class MigrateChat:
         checkIfTableExists(self.engine, self.table)
         self.createChatTable()
         print(f'Starting Migration for {self.table} table ...')
-
+        Base.metadata.bind = self.engine
+        session = createRdsSession()
         vertexIds = [v.id for v in self.g.V().hasLabel("chat").toList()]
-        vertexIterate = iter(vertexIds)
-
-        while True:
-            try:
-                vertexId = next(vertexIterate)
-                #if validate_uuid(vertexId):
-                Base.metadata.bind = self.engine
+        try:
+            for vertexId in vertexIds:
+                chats_to_add = []
                 chatValueMap = self.g.V(vertexId).valueMap().toList()[0]
-
-                # Query for has_participant vertex
-                has_participant_vertex = self.g.V(vertexId).out("has_participant").next()
-                has_participant_id = has_participant_vertex.id if has_participant_vertex is not None else None
-
-                # Query for consists_of vertex
-                consists_of_vertex = self.g.V(vertexId).out("consists_of").next()
-                consists_of_id = consists_of_vertex.id if consists_of_vertex is not None else None
-
-                try:
-                    session = createRdsSession()
-                    chat = Chat(
-                        chat_id = vertexId,
-                        blocked = chatValueMap.get("blocked", [None])[0],
-                        last_login = chatValueMap.get("last_login", [None])[0],
-                        has_participant = has_participant_id,
-                        consists_of = consists_of_id,
-                        created_timestamp = chatValueMap.get("created_timestamp", [None])[0]
-                    )
+                has_participant_vertex_ids = self.g.V(vertexId).outE("has_participant").toList()
+                consists_of_vertex_ids = self.g.V(vertexId).out("consists_of").toList()
+                worker_id = None
+                customer_id = None
+                for has_participant_vertex_id in has_participant_vertex_ids:
+ 
+                    out_vertex_id = str(has_participant_vertex_id).split("][")[1].split("->")[1][:-1]        
                     
-                    session.add(chat)
-                    commitRds(session)
-                
-                except Exception as e:
-                    print(f'Failed due to {str(e)}')
-                # else:
-                #     print(f'Invalid UUID Detected {vertexId} ... Skipping.')
-            except StopIteration:
-                break
+                    if self.g.V(out_vertex_id).label().next() == "worker":
+                        worker_id = out_vertex_id
+
+                    if self.g.V(out_vertex_id).label().next() == "customer":
+                        customer_id = out_vertex_id
+
+                for consists_of_vertex_id in consists_of_vertex_ids:
+                    try:
+                        chat = Chat(
+                            chat_id = vertexId,
+                            blocked = chatValueMap.get("blocked", [None])[0],
+                            last_login = chatValueMap.get("last_login", [None])[0],
+                            has_participant_worker = worker_id,
+                            has_participant_customer = customer_id,
+                            consists_of = consists_of_vertex_id.id,
+                            created_timestamp = chatValueMap.get("created_timestamp", [None])[0]
+                        )
+                        
+                        chats_to_add.append(chat)
+                        
+                    except Exception as e:
+                        print(f'Failed due to {str(e)}')
+            
+                session.add_all(chats_to_add)
+            session.commit()
+                    
+        except Exception as e:
+            print(str(e))
+            session.rollback()
+        
+        finally:
+            session.close()
 
 migrate_chat = MigrateChat()
 migrate_chat.migrateChat()

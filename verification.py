@@ -26,24 +26,23 @@ class MigrateVerification:
         with createRdsSession() as session:
             vertexIds = self.g.V().hasLabel("verification").toList()
             for vertexId in vertexIds:
-                if validate_uuid(vertexId.id):
-                    verificationValueMaps = self.g.V(vertexId).valueMap().toList()
-                    try:                        
-                        for verificationValueMap in verificationValueMaps:
-                            outVertexs = self.g.V(vertexId.id).out().toList()
-                            for outVertex in outVertexs:
-                                verification = Verification(
-                                    last_login = verificationValueMap.get("last_login", [None])[0],
-                                    type = verificationValueMap.get("type", [None])[0],
-                                    used_to_verify = outVertex.id,
-                                    verification_id = vertexId.id
-                                )
-                                session.add(verification)
-                                commitRds(session)
-                    except Exception as e:
-                        print(f"Error migrating verification with ID {vertexId}: {str(e)}")
-                else:
-                    print(f'Invalid UUID Detected {vertexId} ... Skipping.')
-
+                workers_to_add = []
+                verificationValueMaps = self.g.V(vertexId).valueMap().toList()
+                try:                        
+                    for verificationValueMap in verificationValueMaps:
+                        outVertexs = self.g.V(vertexId.id).out().toList()
+                        for outVertex in outVertexs:
+                            verification = Verification(
+                                last_login = verificationValueMap.get("last_login", [None])[0],
+                                type = verificationValueMap.get("type", [None])[0],
+                                used_to_verify = outVertex.id,
+                                verification_id = vertexId.id
+                            )
+                            workers_to_add.append(verification)
+                        session.add_all(workers_to_add)
+                except Exception as e:
+                    print(f"Error migrating verification with ID {vertexId}: {str(e)}")
+            session.commit()        
+                
 migrate_verification = MigrateVerification()
 migrate_verification.migrateVerification()
