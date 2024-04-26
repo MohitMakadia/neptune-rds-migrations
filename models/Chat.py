@@ -18,13 +18,13 @@ class Chat(Base):
     blocked = Column(Boolean, default=None)
     created_timestamp = Column(Integer())
     last_login = Column(Integer()) 
-    has_participant_worker = Column(String(255))
-    has_participant_customer = Column(String(255))
-    consists_of = Column(String(255))
+    worker_id = Column(String(255))
+    customer_id = Column(String(255))
+    message_id = Column(String(255))
 
-    # chat_id  = Column(PGUUID(as_uuid=True))
-    # has_participant = Column(PGUUID(as_uuid=True))
-    # consists_of = Column(PGUUID(as_uuid=True))
+    # has_participant_worker = Column(String(255))
+    # has_participant_customer = Column(String(255))
+    # consists_of = Column(String(255))
 
     def tableLaunch():
         commitRds(deployTable(Base, engine))

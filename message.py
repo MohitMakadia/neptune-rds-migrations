@@ -23,43 +23,56 @@ class migrateMessage:
         self.createCustomerTable()
         print(f'Starting Migration for {self.table} table ...')
         vertexIds = [v.id for v in self.g.V().hasLabel("message").toList()]
-        vertexIterate = iter(vertexIds)
-        while True:
-            try:
-                vertexId = next(vertexIterate)
-                # if validate_uuid(vertexId):
+        session = createRdsSession()
+        try:
+            for vertexId in vertexIds:
+                message_to_add = []
                 Base.metadata.bind = self.engine
                 messageValueMap = self.g.V(vertexId).valueMap().toList()[0]
                 outEdges = self.g.V(vertexId).outE().toList()
-                for edge in outEdges:
-                    try:
-                        session = createRdsSession()
-                        message = Message(
-                            message_id = vertexId,
-                            content = messageValueMap.get("content", [None])[0],
-                            last_login = messageValueMap.get("last_login", [None])[0],
-                            seen = messageValueMap.get("seen", [None])[0],
-                            sent_timestamp = messageValueMap.get("sent_timestamp", [None])[0],
-                            authored_by = None,
-                            addressed_to = None,
-                            is_part_of = None
-                        )
-                        if edge.label == "authored_by":
-                            message.authored_by = edge.id
-                        elif edge.label == "addressed_to":
-                            message.addressed_to = edge.id
-                        elif edge.label == "is_part_of":
-                            message.is_part_of = edge.id
-                        
-                        session.add(message)
-                        commitRds(session)
-
-                    except Exception as e:
-                        print(f'Failed due to {str(e)}')
-                # else:
-                #     print(f'Invalid UUID Detected {vertexId} ... Skipping.')
-            except StopIteration:
-                break
                 
+                customer_id = None
+                worker_id = None
+                chat_id = None
+                
+                for edge in outEdges:
+                    
+                    outVertexId = str(edge).split("][")[1].split("->")[1][:-1]
+
+                    if self.g.V(outVertexId).label().next() == "customer":
+                        customer_id = outVertexId
+                    elif self.g.V(outVertexId).label().next() == "worker":
+                        worker_id = outVertexId
+                    elif edge.label == "is_part_of":
+                        chat_id = outVertexId
+
+                try:
+                    
+                    message = Message(
+                        message_id = vertexId,
+                        content = messageValueMap.get("content", [None])[0],
+                        last_login = messageValueMap.get("last_login", [None])[0],
+                        seen = messageValueMap.get("seen", [None])[0],
+                        sent_timestamp = messageValueMap.get("sent_timestamp", [None])[0],
+                        customer_id = customer_id,
+                        worker_id = worker_id,
+                        chat_id = chat_id
+                    )
+                    
+                    message_to_add.append(message)
+                        
+                except Exception as e:
+                    print(f'Failed due to {str(e)}')
+
+                session.add_all(message_to_add)
+            session.commit()
+
+        except Exception as e:
+            print(str(e))
+            session.rollback()
+        
+        finally:
+            session.close()
+                        
 currency = migrateMessage()
 currency.migrateMessage()

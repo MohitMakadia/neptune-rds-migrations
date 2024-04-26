@@ -17,14 +17,13 @@ class Message(Base):
     last_login = Column(Integer())
     seen = Column(Boolean, default=False)
     sent_timestamp = Column(Integer())
-    authored_by = Column(String(255))
-    addressed_to = Column(String(255))
-    is_part_of = Column(String(255))
-
-    # message_id = Column(PGUUID(as_uuid=True))
-    # authored_by = Column(PGUUID(as_uuid=True))
-    # addressed_to = Column(PGUUID(as_uuid=True))
-    # is_part_of = Column(PGUUID(as_uuid=True))
+    customer_id = Column(String(255))
+    worker_id = Column(String(255))
+    chat_id = Column(String(255))
     
+    # authored_by = Column(String(255))
+    # addressed_to = Column(String(255))
+    # is_part_of = Column(String(255))
+
     def tableLaunch():
         commitRds(deployTable(Base, engine))

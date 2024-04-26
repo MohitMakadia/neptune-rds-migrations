@@ -48,9 +48,9 @@ class MigrateChat:
                             chat_id = vertexId,
                             blocked = chatValueMap.get("blocked", [None])[0],
                             last_login = chatValueMap.get("last_login", [None])[0],
-                            has_participant_worker = worker_id,
-                            has_participant_customer = customer_id,
-                            consists_of = consists_of_vertex_id.id,
+                            worker_id = worker_id,
+                            customer_id = customer_id,
+                            message_id = consists_of_vertex_id.id,
                             created_timestamp = chatValueMap.get("created_timestamp", [None])[0]
                         )
                         
