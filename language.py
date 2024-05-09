@@ -4,7 +4,6 @@ from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from sqlalchemy import inspect
 from utils.session import createRdsSession, commitRds
-from utils.validation import validate_uuid
 
 class MigrateLanguage:
     
@@ -34,7 +33,6 @@ class MigrateLanguage:
         vertexIds = self.g.V().hasLabel("language").toList()
         for vertexId in vertexIds:
             session = createRdsSession()
-            # if validate_uuid(vertexId.id):
             languageValueMaps = self.g.V(vertexId).valueMap().toList()
             try:                        
                 for languageValueMap in languageValueMaps:
@@ -52,8 +50,6 @@ class MigrateLanguage:
                         commitRds(session)
             except Exception as e:
                 print(f"Error migrating verification with ID {vertexId}: {str(e)}")
-            # else:
-            #     print(f'Invalid UUID Detected {vertexId} ... Skipping.')
-
+            
 migrate_language = MigrateLanguage()
 migrate_language.migratelanguage() 

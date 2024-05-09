@@ -26,6 +26,7 @@ class MigrateVertex:
         vertexIterate = iter(vertexIds)
 
         while True:
+            
             try:
                 vertexId = next(vertexIterate)
                 if validate_uuid(vertexId):
@@ -40,10 +41,13 @@ class MigrateVertex:
                         )
                         session.add(vertex)
                         commitRds(session)
+                    
                     except Exception as e:
                         print(f'Failed due to {str(e)}')
+                
                 else:
                     print(f'Invalid UUID Detected {vertexId} ... Skipping.')
+            
             except StopIteration:
                 break
 

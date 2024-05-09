@@ -1,9 +1,9 @@
 # type: ignore[import]
-from models.Ironing import Ironing, Base
+from models.Ironing import Ironing
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from utils.session import createRdsSession, commitRds
-from utils.validation import validate_uuid, checkIfTableExists
+from utils.validation import checkIfTableExists
  
 class MigrateIroning:
     def __init__(self):

@@ -2,8 +2,8 @@
 from models.Payment import Payment, Base
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
-from utils.session import createRdsSession, commitRds
-from utils.validation import validate_uuid, checkIfTableExists
+from utils.session import createRdsSession
+from utils.validation import checkIfTableExists
  
 class migratePayment:
 

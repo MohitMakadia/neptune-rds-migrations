@@ -4,6 +4,7 @@ from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from utils.session import createRdsSession, commitRds
 from utils.validation import checkIfTableExists
+
 class MigrateVerificationCode:
     
     def __init__(self):

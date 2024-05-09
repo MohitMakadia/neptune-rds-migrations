@@ -10,11 +10,12 @@ import os
 
 class migrateDay:
     
-    def __init__(self):
+    def __init__(self, chunk_number):
         self.engine = rdsConnect()
         self.neptune_engine = neptuneConnect()
         self.g = Graph().traversal().withRemote(self.neptune_engine)
         self.table = "Day"
+        self.chunk_number = chunk_number
               
     def createDayTable(self):
         print(f'Creating {self.table} Table ...')
@@ -49,12 +50,12 @@ class migrateDay:
         self.createDayTable()
         print(f'Starting Migration for {self.table} table ...')
         Base.metadata.bind = self.engine
-        chunk_name, chunk_data = self.processChunks(1)
+        chunk_name, chunk_data = self.processChunks(chunk_number)
         print("Chunk -> ", chunk_name)
         session = createRdsSession()
         try:
             for vertexId in chunk_data:
-                workers_to_add = []
+                days_to_add = []
                 daysValueMap = self.g.V(vertexId).valueMap().toList()[0]
                 outVertexs = self.g.V(vertexId).outE().toList()
                 for outVertex in outVertexs:
@@ -67,12 +68,12 @@ class migrateDay:
                             last_login = daysValueMap.get("last_login", [None])[0],
                             is_working_day_for = outVertexId
                         )
-                        workers_to_add.append(day)
+                        days_to_add.append(day)
 
                     except Exception as e:
                         print(f'Failed due to {str(e)}')
 
-                session.add_all(workers_to_add)
+                session.add_all(days_to_add)
             session.commit()
         
         except Exception as e:
@@ -82,5 +83,11 @@ class migrateDay:
         finally:
             session.close()
 
-worker = migrateDay()
-worker.migrateDay()
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 day_partition.py <chunk_number>")
+        sys.exit(1)
+
+    chunk_number = int(sys.argv[1])
+    day = migrateDay(chunk_number)
+    day.migrateDay()
