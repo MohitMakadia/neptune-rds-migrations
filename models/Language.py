@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base 
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from utils.connect import rdsConnect
 from utils.session import createRdsSession, commitRds
 
@@ -17,9 +16,6 @@ class Language(Base):
     last_login = Column(Integer())
     name = Column(String) 
     spoken_by = Column(String(255))
-
-    # language_id = Column(PGUUID(as_uuid=True))
-    # spoken_by = Column(PGUUID(as_uuid=True)) 
 
     def tableLaunch():
         Base.metadata.create_all(engine)

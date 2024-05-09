@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base 
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from utils.connect import rdsConnect
 from utils.session import commitRds, deployTable
 
@@ -17,13 +16,11 @@ class Message(Base):
     last_login = Column(Integer())
     seen = Column(Boolean, default=False)
     sent_timestamp = Column(Integer())
+    author_id = Column(String(255))
+    receiver_id = Column(String(255))
     customer_id = Column(String(255))
     worker_id = Column(String(255))
     chat_id = Column(String(255))
-    
-    # authored_by = Column(String(255))
-    # addressed_to = Column(String(255))
-    # is_part_of = Column(String(255))
 
     def tableLaunch():
         commitRds(deployTable(Base, engine))

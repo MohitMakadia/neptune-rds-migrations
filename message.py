@@ -34,11 +34,18 @@ class migrateMessage:
                 customer_id = None
                 worker_id = None
                 chat_id = None
+                author_id = None
+                receiver_id = None
                 
                 for edge in outEdges:
                     
                     outVertexId = str(edge).split("][")[1].split("->")[1][:-1]
-
+                    
+                    if edge.label == "authored_by":
+                        author_id = outVertexId
+                    elif edge.label == "addressed_to":
+                        receiver_id = outVertexId
+                    
                     if self.g.V(outVertexId).label().next() == "customer":
                         customer_id = outVertexId
                     elif self.g.V(outVertexId).label().next() == "worker":
@@ -54,6 +61,8 @@ class migrateMessage:
                         last_login = messageValueMap.get("last_login", [None])[0],
                         seen = messageValueMap.get("seen", [None])[0],
                         sent_timestamp = messageValueMap.get("sent_timestamp", [None])[0],
+                        author_id = author_id,
+                        receiver_id = receiver_id,
                         customer_id = customer_id,
                         worker_id = worker_id,
                         chat_id = chat_id

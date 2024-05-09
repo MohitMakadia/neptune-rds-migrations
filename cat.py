@@ -1,5 +1,5 @@
 # type: ignore[import]
-from models.Cat import Cat , Base
+from models.Cat import Cat
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from utils.session import createRdsSession, commitRds
@@ -27,12 +27,9 @@ class MigrateCat:
 
         while True:
             try:
-                vertexId = next(vertexIterate)
-                #if validate_uuid(vertexId) and validate_uuid(vertexId) and validate_uuid(vertexId):
-                    
+                vertexId = next(vertexIterate)    
                 blocks_vertices = self.g.V(vertexId).out("blocks").toList()
                 blocks_ids = [vertex.id for vertex in blocks_vertices]
-
 
                 handling_required_by_vertices = self.g.V(vertexId).out("handling_required_by").toList()
                 handling_required_by_ids = [vertex.id for vertex in handling_required_by_vertices]
@@ -60,13 +57,11 @@ class MigrateCat:
                             session.add(cat)
                         else:
                             print(f'Invalid UUID Detected {handling_required_by_id} ... Skipping.')       
-                    
                     commitRds(session)
                     
                 except Exception as e:
                     print(f'Failed due to {str(e)}')
-                # else:
-                #     print(f'Invalid UUID Detected {vertexId} ... Skipping.')
+            
             except StopIteration:
                 break
 

@@ -14,13 +14,11 @@ class Currency(Base):
 
     id = Column(Integer, primary_key=True)
     currency_id = Column(String(1000))
-    code = Column(String(10))
-    country = Column(String(50))
+    code = Column(String(255))
+    country = Column(String(255))
     last_login = Column(Integer())
-    name = Column(String(20))
+    name = Column(String(255))
     is_currency_for = Column(String(1000))
-    
-    #currency_id = Column(PGUUID(as_uuid=True))
-    #is_currency_for = Column(PGUUID(as_uuid=True))
+
     def tableLaunch():
         commitRds(deployTable(Base, engine))

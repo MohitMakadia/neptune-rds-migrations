@@ -1,6 +1,5 @@
 from sqlalchemy import Column, Integer, String
 from sqlalchemy.ext.declarative import declarative_base 
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from utils.connect import rdsConnect
 from utils.session import commitRds, deployTable
 
@@ -15,11 +14,10 @@ class Review(Base):
     review_id  = Column(String(255))
     score = Column(Integer())
     text = Column(String(1000))
-    evaluated = Column(String(255))
-    written_by = Column(String(255))
+    author_id = Column(String(255))
+    receiver_id = Column(String(255))
+    customer_id = Column(String(255))
+    worker_id = Column(String(255))
 
-    # review_id  = Column(PGUUID(as_uuid=True))
-    # evaluated = Column(PGUUID(as_uuid=True))
-    # written_by = Column(PGUUID(as_uuid=True))
     def tableLaunch():
         commitRds(deployTable(Base, engine))

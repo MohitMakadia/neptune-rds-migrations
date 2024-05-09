@@ -2,19 +2,20 @@
 from models.Worker import Worker, Base
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
-from sqlalchemy import inspect
-from utils.session import createRdsSession, commitRds
-from utils.validation import validate_uuid, checkIfTableExists
+from utils.session import createRdsSession
+from utils.validation import checkIfTableExists
 import ast
 import os
+import sys
 
 class migrateWorker:
     
-    def __init__(self):
+    def __init__(self, chunk_number):
         self.engine = rdsConnect()
         self.neptune_engine = neptuneConnect()
         self.g = Graph().traversal().withRemote(self.neptune_engine)
         self.table = "Worker"
+        self.chunk_number = chunk_number
               
     def createWorkerTable(self):
         print(f'Creating {self.table} Table ...')
@@ -49,7 +50,7 @@ class migrateWorker:
         self.createWorkerTable()
         print(f'Starting Migration for {self.table} table ...')
         Base.metadata.bind = self.engine
-        chunk_name, chunk_data = self.processChunks()
+        chunk_name, chunk_data = self.processChunks(self.chunk_number)
         print("Chunk -> ", chunk_name)
         session = createRdsSession()
         try:
@@ -156,7 +157,6 @@ class migrateWorker:
                         print(str(e))
                 
                 session.add_all(workers_to_add)
-            
             session.commit()
         
         except Exception as e:
@@ -167,6 +167,14 @@ class migrateWorker:
             session.close()
 
         self.markChunkCompleted(chunk_name, "Completed")
-    
-worker = migrateWorker()
-worker.migrateWorker()
+
+
+
+if __name__ == "__main__":
+    if len(sys.argv) != 2:
+        print("Usage: python3 worker_partition.py <chunk_number>")
+        sys.exit(1)
+
+    chunk_number = int(sys.argv[1])
+    worker = migrateWorker(chunk_number)
+    worker.migrateWorker()

@@ -1,7 +1,6 @@
 # type: ignore[import]
 from sqlalchemy import Column, Integer, String, Boolean, Numeric
 from sqlalchemy.ext.declarative import declarative_base 
-from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from utils.connect import rdsConnect
 from utils.session import createRdsSession, commitRds
 

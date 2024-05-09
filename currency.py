@@ -22,34 +22,39 @@ class migrateCurrency:
         checkIfTableExists(self.engine, self.table)
         self.createCustomerTable()
         print(f'Starting Migration for {self.table} table ...')
+        Base.metadata.bind = self.engine
+        session = createRdsSession()
         vertexIds = [v.id for v in self.g.V().hasLabel("currency").toList()]
-        vertexIterate = iter(vertexIds)
-        while True:
-            try:
-                vertexId = next(vertexIterate)
-                #if validate_uuid(vertexId):
-                Base.metadata.bind = self.engine
+        try:
+            for vertexId in vertexIds:
+                currency_to_add = []
                 currencyValueMap = self.g.V(vertexId).valueMap().toList()[0]
-                outVertexs = self.g.V(vertexId).out().toList()
+                outVertexs = self.g.V(vertexId).outE().toList()
                 for outVertex in outVertexs:
+                    out_vertex_id = str(outVertex).split("][")[1].split("->")[1][:-1]
                     try:
-                        session = createRdsSession()
                         currency = Currency(
                             currency_id = vertexId,
                             code = currencyValueMap.get("code", [None])[0],
                             country = currencyValueMap.get("country", [None])[0],
                             last_login = currencyValueMap.get("last_login", [None])[0],
                             name = currencyValueMap.get("name", [None])[0],
-                            is_currency_for = outVertex.id
+                            is_currency_for = out_vertex_id
                         )
-                        session.add(currency)
-                        commitRds(session)
+                        currency_to_add.append(currency)
+                    
                     except Exception as e:
                         print(f'Failed due to {str(e)}')
-                # else:
-                #     print(f'Invalid UUID Detected {vertexId} ... Skipping.')
-            except StopIteration:
-                break
                 
+                session.add_all(currency_to_add)
+            session.commit()
+        
+        except Exception as e:
+            print(str(e))
+            session.rollback()
+        
+        finally:
+            session.close()
+
 currency = migrateCurrency()
 currency.migrateCurrency()

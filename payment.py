@@ -23,16 +23,15 @@ class migratePayment:
         self.createCustomerTable()
         print(f'Starting Migration for {self.table} table ...')
         vertexIds = [v.id for v in self.g.V().hasLabel("payment").toList()]
-        vertexIterate = iter(vertexIds)
-        while True:
-            try:
-                vertexId = next(vertexIterate)         
+        session = createRdsSession()
+        try:
+            for vertexId in vertexIds: 
+                payment_to_add = []       
                 Base.metadata.bind = self.engine
                 paymentValueMap = self.g.V(vertexId).valueMap().toList()[0]
                 outVertexs = self.g.V(vertexId).out().toList()
                 for outVertex in outVertexs:
                     try:
-                        session = createRdsSession()
                         payment = Payment(
                             id = vertexId,
                             created_at = paymentValueMap.get("created_at", [None])[0],
@@ -40,20 +39,26 @@ class migratePayment:
                             current_status = paymentValueMap.get("current_status", [None])[0],
                             last_login = paymentValueMap.get("last_login", [None])[0],
                             latitude = paymentValueMap.get("latitude", [None])[0],
-                            longitute = paymentValueMap.get("longitude", [None])[0],
+                            longitude = paymentValueMap.get("longitude", [None])[0],
                             place_id = paymentValueMap.get("place_id", [None])[0],
                             updated_at = paymentValueMap.get("updated_at", [None])[0],
                             value = paymentValueMap.get("value", [None])[0],
-                            issued_by = outVertex.id
+                            issued_by = outVertex.id,
+                            return_url = paymentValueMap.get("return_url", [None])[0]
                         )
 
-                        session.add(payment)
-                        commitRds(session)
-
+                        payment_to_add.append(payment)
                     except Exception as e:
                         print(f'Failed due to {str(e)}')  
-            except StopIteration:
-                break
-                
+                session.add_all(payment_to_add)
+            session.commit()
+
+        except Exception as e:
+            print(str(e))
+            session.rollback()
+        
+        finally:
+            session.close()
+            
 currency = migratePayment()
 currency.migratePayment()

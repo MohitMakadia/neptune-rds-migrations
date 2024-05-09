@@ -2,9 +2,8 @@
 from models.Worker import Worker, Base
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
-from sqlalchemy import inspect
 from utils.session import createRdsSession, commitRds
-from utils.validation import validate_uuid, checkIfTableExists
+from utils.validation import checkIfTableExists
 
 class migrateWorker:
     
@@ -54,9 +53,9 @@ class migrateWorker:
                         max_distance = workerValueMap.get("max_distance", [None])[0],
                         personal_note = workerValueMap.get("personal_note", [None])[0],
                         profile_picture = workerValueMap.get("profile_picture", [None])[0],
-                        published = workerValueMap.get("published", [False])[None],
+                        published = workerValueMap.get("published", [None])[0],
                         registered_date = workerValueMap.get("registered_date", [None])[0],
-                        score = workerValueMap.get("score", [0])[None],
+                        score = workerValueMap.get("score", [None])[0],
                         user_alert = workerValueMap.get("user_alert", [None])[0],
                         votes = workerValueMap.get("votes", [None])[0],
                         speaks = None,
@@ -77,49 +76,49 @@ class migrateWorker:
                         )
                     
                     if edge.label == "speaks":
-                        customer.speaks = outVertexId
+                        worker.speaks = outVertexId
 
                     if edge.label == "verified_by":
-                        customer.verified_by = outVertexId
+                        worker.verified_by = outVertexId
 
                     if edge.label == "wants_payment_in":
-                        customer.wants_payment_in = outVertexId
+                        worker.wants_payment_in = outVertexId
 
                     if edge.label == "works_on":
-                        customer.works_on = outVertexId
+                        worker.works_on = outVertexId
 
                     if edge.label == "participates_in":
-                        customer.participates_in = outVertexId
+                        worker.participates_in = outVertexId
 
                     if edge.label == "receives":
-                        customer.receives = outVertexId
+                        worker.receives = outVertexId
 
                     if edge.label == "favored_by":
-                        customer.favored_by = outVertexId
+                        worker.favored_by = outVertexId
                         
                     if edge.label == "authored":
-                        customer.authored = outVertexId
+                        worker.authored = outVertexId
 
                     if edge.label == "wrote":
-                        customer.wrote = outVertexId
+                        worker.wrote = outVertexId
 
                     if edge.label == "is_evaluated_by":
-                        customer.is_evaluated_by = outVertexId
+                        worker.is_evaluated_by = outVertexId
 
                     if edge.label == "blocked_by":
-                        customer.is_evaluated_by = outVertexId
+                        worker.is_evaluated_by = outVertexId
 
                     if edge.label == "issued":
-                        customer.issued = outVertexId
+                        worker.issued = outVertexId
 
                     if edge.label == "favors":
-                        customer.favors = outVertexId
+                        worker.favors = outVertexId
 
                     if edge.label == "wants_to_pay_in":
-                        customer.wants_to_pay_in = outVertexId
+                        worker.wants_to_pay_in = outVertexId
                     
                     if edge.label == "wants_service_on":
-                        customer.wants_service_on = outVertexId
+                        worker.wants_service_on = outVertexId
 
                     session.add(worker)
                     commitRds(session)

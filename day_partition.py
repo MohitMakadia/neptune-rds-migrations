@@ -3,8 +3,8 @@ from models.Day import Day, Base
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
 from sqlalchemy import inspect
-from utils.session import createRdsSession, commitRds
-from utils.validation import validate_uuid, checkIfTableExists
+from utils.session import createRdsSession
+from utils.validation import checkIfTableExists
 import ast
 import os
 
@@ -73,7 +73,6 @@ class migrateDay:
                         print(f'Failed due to {str(e)}')
 
                 session.add_all(workers_to_add)
-
             session.commit()
         
         except Exception as e:

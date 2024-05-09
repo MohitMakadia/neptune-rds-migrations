@@ -2,9 +2,8 @@
 from models.Customer import Customer, Base
 from utils.connect import rdsConnect, neptuneConnect
 from gremlin_python.structure.graph import Graph
-from sqlalchemy import inspect
-from utils.session import createRdsSession, commitRds
-from utils.validation import validate_uuid, checkIfTableExists
+from utils.session import createRdsSession
+from utils.validation import checkIfTableExists
 
 class migrateCustomer:
     
@@ -25,16 +24,77 @@ class migrateCustomer:
         print(f'Starting Migration for {self.table} table ...')
         Base.metadata.bind = self.engine
         vertexIds = self.g.V().hasLabel("customer").toList()
-        session = createRdsSession()
         for vertexId in vertexIds:
-            
             customerValueMap = self.g.V(vertexId).valueMap().toList()[0]
             outEdges = self.g.V(vertexId).outE().toList()
+
+            verified_by = None
+            participates_in = None
+            authored = None
+            speaks = None
+            wants_to_pay_in = None
+            wants_service_on = None
+            favored_by = None
+            receives = None
+            issued = None
+            favors = None
+            is_evaluated_by = None
+            wrote = None
+            wants_payment_in = None
+            works_on = None
+            requires_handling = None
+
             for edge in outEdges:
                 session = createRdsSession()
-                try:
-                    outVertexId = str(edge).split("][")[1].split("->")[1][:-1]
-                    customer = Customer(
+                outVertexId = str(edge).split("][")[1].split("->")[1][:-1]
+                
+                if edge.label == "verified_by":
+                    verified_by = outVertexId
+
+                if edge.label == "participates_in":
+                    participates_in = outVertexId
+
+                if edge.label == "authored":
+                    authored = outVertexId
+                
+                if edge.label == "speaks":
+                    speaks = outVertexId
+                
+                if edge.label == "wants_to_pay_in":
+                    wants_to_pay_in = outVertexId
+                
+                if edge.label == "wants_service_on":
+                    wants_service_on = outVertexId
+
+                if edge.label == "favored_by":
+                    favored_by = outVertexId
+
+                if edge.label == "receives":
+                    receives = outVertexId
+                    
+                if edge.label == "issued":
+                    issued = outVertexId
+
+                if edge.label == "favors":
+                    favors = outVertexId
+
+                if edge.label == "is_evaluated_by":
+                    is_evaluated_by = outVertexId
+
+                if edge.label == "wrote":
+                    wrote = outVertexId
+
+                if edge.label == "wants_payment_in":
+                    wants_payment_in = outVertexId
+
+                if edge.label == "works_on":
+                    works_on = outVertexId
+
+                if edge.label == "requires_handling":
+                    requires_handling =  outVertexId
+
+            try:
+                customer = Customer(
                         customer_id = vertexId.id,
                         amount = customerValueMap.get("amount", [None])[0],
                         domain_language = customerValueMap.get("domain_language", [None])[0],
@@ -65,74 +125,31 @@ class migrateCustomer:
                         location_longitude = customerValueMap.get("location_longitude", [None])[0],
                         location_latitude = customerValueMap.get("location_latitude", [None])[0],
                         max_distance = customerValueMap.get("max_distance", [None])[0],
-                        verified_by = None,
-                        participates_in = None,
-                        authored = None,
-                        speaks = None,
-                        wants_to_pay_in = None,
-                        wants_service_on = None,
-                        favored_by = None,
-                        receives = None,
-                        issued = None,
-                        favors = None,
-                        is_evaluated_by = None,
-                        wrote = None,
-                        wants_payment_in = None,
-                        works_on = None,
-                        requires_handling = None
-                        )
+                        verified_by = verified_by,
+                        participates_in = participates_in,
+                        authored = authored,
+                        speaks = speaks,
+                        wants_to_pay_in = wants_to_pay_in,
+                        wants_service_on = wants_service_on,
+                        favored_by = favored_by,
+                        receives = receives,
+                        issued = issued,
+                        favors = favors,
+                        is_evaluated_by = is_evaluated_by,
+                        wrote = wrote,
+                        wants_payment_in = wants_payment_in,
+                        works_on = works_on,
+                        requires_handling = requires_handling
+                    )
+                
+                session.add(customer)
+                session.commit()
+                session.close()
 
-                    if edge.label == "verified_by":
-                        customer.verified_by = outVertexId
-
-                    if edge.label == "participates_in":
-                        customer.participates_in = outVertexId
-
-                    if edge.label == "authored":
-                        customer.authored = outVertexId
-                    
-                    if edge.label == "speaks":
-                        customer.speaks = outVertexId
-                    
-                    if edge.label == "wants_to_pay_in":
-                        customer.wants_to_pay_in = outVertexId
-                    
-                    if edge.label == "wants_service_on":
-                        customer.wants_service_on = outVertexId
-
-                    if edge.label == "favored_by":
-                        customer.favored_by = outVertexId
-
-                    if edge.label == "receives":
-                        customer.receives = outVertexId
-                        
-                    if edge.label == "issued":
-                        customer.issued = outVertexId
-
-                    if edge.label == "favors":
-                        customer.favors = outVertexId
-
-                    if edge.label == "is_evaluated_by":
-                        customer.is_evaluated_by = outVertexId
-
-                    if edge.label == "wrote":
-                        customer.wrote = outVertexId
-
-                    if edge.label == "wants_payment_in":
-                        customer.wants_payment_in = outVertexId
-
-                    if edge.label == "works_on":
-                        customer.works_on = outVertexId
-
-                    if edge.label == "requires_handling":
-                        customer.requires_handling =  outVertexId
-
-                    session.add(customer)
-                    commitRds(session)
-
-                except Exception as e:
-                    print(str(e))
-                    session.close()
+            except Exception as e:
+                print(f'Failed due to {str(e)}')
+                session.close()
+            
             
 customer = migrateCustomer()
 customer.migrateCustomer()
