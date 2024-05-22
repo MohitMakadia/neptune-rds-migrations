@@ -1,15 +1,16 @@
 # type: ignore[import]
 from sqlalchemy import Column, Integer, String, Boolean, Numeric
-from sqlalchemy.ext.declarative import declarative_base 
+from sqlalchemy.ext.declarative import declarative_base
 from utils.connect import rdsConnect
 from utils.session import createRdsSession, commitRds
 
 Base = declarative_base()
 engine = rdsConnect()
 
+
 class Customer(Base):
-    
-    __tablename__ = "Customer"
+
+    __tablename__ = "NewCustomer"
 
     id = Column(Integer(), primary_key=True)
     customer_id = Column(String(255))
@@ -22,7 +23,7 @@ class Customer(Base):
     first_name = Column(String(1000))
     internal_score = Column(Integer())
     interval = Column(Integer())
-    is_deleted = Column(Boolean, default=True)
+    is_deleted = Column(Boolean, default=False)
     is_online = Column(Boolean, default=False)
     is_suspended = Column(Boolean, default=False)
     last_login = Column(Integer())
@@ -57,7 +58,7 @@ class Customer(Base):
     wants_payment_in = Column(String(1000))
     works_on = Column(String(1000))
     requires_handling = Column(String(1000))
-    
+
     def tableLaunch():
         Base.metadata.create_all(engine)
         session = createRdsSession()

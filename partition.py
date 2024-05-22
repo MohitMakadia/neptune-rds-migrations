@@ -3,6 +3,7 @@ from gremlin_python.structure.graph import Graph
 import os
 import sys
 
+
 class PartChunks:
 
     def __init__(self, file_name, chunks, label):
@@ -24,9 +25,10 @@ class PartChunks:
         chunks_folder = "chunks"
         if not os.path.exists(chunks_folder):
             os.makedirs(chunks_folder)
-            
+
         with open("chunks/" + self.file_name, "w") as f:
             f.write(str(chunks))
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:

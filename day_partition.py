@@ -66,7 +66,7 @@ class migrateDay:
                             day_name = daysValueMap.get("day_name", [None])[0],
                             day_of_week = daysValueMap.get("day_of_week", [None])[0],
                             last_login = daysValueMap.get("last_login", [None])[0],
-                            is_working_day_for = outVertexId
+                            is_available_for = outVertexId
                         )
                         days_to_add.append(day)
 

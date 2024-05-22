@@ -1,9 +1,9 @@
-# neptune-rds-migrations
-This project is for data migration from aws neptune to aws rds databases
+# Neptune to RDS Migrations
 
+## How to Run the Migration
 # RDS
-RDS_HOST=migrate-neptune-2-rds.ct91nktpkzqc.eu-west-1.rds.amazonaws.com
-RDS_USERID=postgres
+RDS_HOST=<>
+RDS_USERID=<>
 RDS_PASSWORD=Data12345
 RDS_PORT=5432
 RDS_DATABASE=migrate_neptune_2_rds

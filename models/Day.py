@@ -16,7 +16,7 @@ class Day(Base):
     day_name = Column(String(15))
     day_of_week = Column(Integer())
     last_login = Column(Integer())
-    is_working_day_for = Column(String(255))
+    is_available_for = Column(String(255))
 
     def tableLaunch():
         commitRds(deployTable(Base, engine))
