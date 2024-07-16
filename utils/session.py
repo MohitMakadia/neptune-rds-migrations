@@ -1,17 +1,20 @@
 # type: ignore[import]
-from sqlalchemy.orm import sessionmaker 
-from utils.connect import rdsConnect
+from sqlalchemy.orm import sessionmaker
+from utils.connect import rds_connect
 
-def createRdsSession():
-    engine = rdsConnect()
+
+def create_rds_session():
+    engine = rds_connect()
     Session = sessionmaker(bind=engine)
     session = Session()
     return session
 
-def commitRds(session):
+
+def commit_rds(session):
     session.commit()
     session.close()
 
-def deployTable(Base, engine):
+
+def deploy_table(Base, engine):
     Base.metadata.create_all(engine)
-    return createRdsSession()
+    return create_rds_session()

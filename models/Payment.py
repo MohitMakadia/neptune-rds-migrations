@@ -1,13 +1,14 @@
 from sqlalchemy import Column, Integer, String, Float
-from sqlalchemy.ext.declarative import declarative_base 
-from utils.connect import rdsConnect
-from utils.session import commitRds, deployTable
+from sqlalchemy.ext.declarative import declarative_base
+from utils.connect import rds_connect
+from utils.session import commit_rds, deploy_table
 
 Base = declarative_base()
-engine = rdsConnect()
+engine = rds_connect()
+
 
 class Payment(Base):
-    
+
     __tablename__ = "Payment"
 
     id = Column(String(100), primary_key=True)
@@ -22,7 +23,8 @@ class Payment(Base):
     value = Column(Integer())
     issued_by = Column(String(100))
     return_url = Column(String(2000))
-    #issued_by = Column(PGUUID(as_uuid=True))
+    # issued_by = Column(PGUUID(as_uuid=True))
 
-    def tableLaunch():
-        commitRds(deployTable(Base, engine))
+    @staticmethod
+    def table_launch():
+        commit_rds(deploy_table(Base, engine))

@@ -1,18 +1,19 @@
 from sqlalchemy import Column, Integer, String, Boolean
-from sqlalchemy.ext.declarative import declarative_base 
-from utils.connect import rdsConnect
-from utils.session import commitRds, deployTable
+from sqlalchemy.ext.declarative import declarative_base
+from utils.connect import rds_connect
+from utils.session import commit_rds, deploy_table
 
 Base = declarative_base()
-engine = rdsConnect()
+engine = rds_connect()
+
 
 class Message(Base):
-    
+
     __tablename__ = "Message"
 
     id = Column(Integer, primary_key=True)
     message_id = Column(String(255))
-    content = Column(String(1000))
+    content = Column(String(100000))
     last_login = Column(Integer())
     seen = Column(Boolean, default=False)
     sent_timestamp = Column(Integer())
@@ -22,5 +23,6 @@ class Message(Base):
     worker_id = Column(String(255))
     chat_id = Column(String(255))
 
-    def tableLaunch():
-        commitRds(deployTable(Base, engine))
+    @staticmethod
+    def table_launch():
+        commit_rds(deploy_table(Base, engine))

@@ -1,4 +1,4 @@
-from utils.connect import neptuneConnect
+from utils.connect import neptune_connect
 from gremlin_python.structure.graph import Graph
 import os
 import sys
@@ -6,20 +6,20 @@ import sys
 
 class PartChunks:
 
-    def __init__(self, file_name, chunks, label):
-        self.neptune_engine = neptuneConnect()
+    def __init__(self, file_name, total_chunks, label):
+        self.neptune_engine = neptune_connect()
         self.g = Graph().traversal().withRemote(self.neptune_engine)
         self.file_name = file_name
-        self.chunks = chunks
+        self.chunks = total_chunks
         self.label = label
 
-    def partChunks(self):
-        allVertexIds = [v.id for v in self.g.V().hasLabel(self.label).toList()]
+    def part_chunks(self):
+        all_vertex_ids = [v.id for v in self.g.V().hasLabel(self.label).toList()]
         chunk_size = self.chunks
         chunks = {}
 
-        for i in range(0, len(allVertexIds), chunk_size):
-            chunk_ids = allVertexIds[i:i+chunk_size]
+        for i in range(0, len(all_vertex_ids), chunk_size):
+            chunk_ids = all_vertex_ids[i : i + chunk_size]
             chunks[i // chunk_size + 1] = chunk_ids
 
         chunks_folder = "chunks"
@@ -36,7 +36,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     file_name = sys.argv[1]
-    chunks = int(sys.argv[2])
+    total_chunks = int(sys.argv[2])
     label = sys.argv[3]
-    part_chunks = PartChunks(file_name, chunks, label)
-    part_chunks.partChunks()
+    part_chunks = PartChunks(file_name, total_chunks, label)
+    part_chunks.part_chunks()

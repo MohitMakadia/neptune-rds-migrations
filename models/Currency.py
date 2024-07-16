@@ -1,15 +1,16 @@
 # type: ignore[import]
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base 
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
-from utils.connect import rdsConnect
-from utils.session import commitRds, deployTable
+from utils.connect import rds_connect
+from utils.session import commit_rds, deploy_table
 
 Base = declarative_base()
-engine = rdsConnect()
+engine = rds_connect()
+
 
 class Currency(Base):
-    
+
     __tablename__ = "Currency"
 
     id = Column(Integer, primary_key=True)
@@ -20,5 +21,6 @@ class Currency(Base):
     name = Column(String(255))
     is_currency_for = Column(String(1000))
 
-    def tableLaunch():
-        commitRds(deployTable(Base, engine))
+    @staticmethod
+    def table_launch():
+        commit_rds(deploy_table(Base, engine))

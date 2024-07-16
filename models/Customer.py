@@ -1,18 +1,18 @@
 # type: ignore[import]
 from sqlalchemy import Column, Integer, String, Boolean, Numeric
 from sqlalchemy.ext.declarative import declarative_base
-from utils.connect import rdsConnect
-from utils.session import createRdsSession, commitRds
+from utils.connect import rds_connect
+from utils.session import create_rds_session, commit_rds
 
 Base = declarative_base()
-engine = rdsConnect()
+engine = rds_connect()
 
 
 class Customer(Base):
 
-    __tablename__ = "NewCustomer"
+    __tablename__ = "Customer1"
 
-    id = Column(Integer(), primary_key=True)
+    id = Column(String(255), primary_key=True)
     customer_id = Column(String(255))
     amount = Column(Integer())
     domain_language = Column(String(1000))
@@ -27,11 +27,6 @@ class Customer(Base):
     is_online = Column(Boolean, default=False)
     is_suspended = Column(Boolean, default=False)
     last_login = Column(Integer())
-    location_address = Column(String(1000))
-    location_city = Column(String(1000))
-    location_country = Column(String(1000))
-    location_place_id = Column(String(2000))
-    location_slug = Column(String(1000))
     personal_note = Column(String(10000))
     phone_no = Column(String(1000))
     profile_picture = Column(String(1000))
@@ -40,26 +35,18 @@ class Customer(Base):
     score = Column(Integer())
     user_alert = Column(Boolean, default=False)
     votes = Column(Integer())
+    max_distance = Column(Integer())
+    location_address = Column(String(1000))
+    location_city = Column(String(1000))
+    location_country = Column(String(1000))
+    location_place_id = Column(String(2000))
+    location_slug = Column(String(1000))
+    location_country_code = Column(String(10))
     location_longitude = Column(Numeric(precision=10, scale=6))
     location_latitude = Column(Numeric(precision=10, scale=6))
-    max_distance = Column(Integer())
-    verified_by = Column(String(1000))
-    participates_in = Column(String(1000))
-    authored = Column(String(1000))
-    speaks = Column(String(1000))
-    wants_to_pay_in = Column(String(1000))
-    wants_service_on = Column(String(1000))
-    favored_by = Column(String(1000))
-    receives = Column(String(1000))
-    issued = Column(String(1000))
-    favors = Column(String(1000))
-    is_evaluated_by = Column(String(1000))
-    wrote = Column(String(1000))
-    wants_payment_in = Column(String(1000))
-    works_on = Column(String(1000))
-    requires_handling = Column(String(1000))
 
-    def tableLaunch():
+    @staticmethod
+    def table_launch():
         Base.metadata.create_all(engine)
-        session = createRdsSession()
-        commitRds(session)
+        session = create_rds_session()
+        commit_rds(session)

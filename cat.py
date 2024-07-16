@@ -1,69 +1,61 @@
 # type: ignore[import]
 from models.Cat import Cat
-from utils.connect import rdsConnect, neptuneConnect
+from utils.connect import rds_connect, neptune_connect
 from gremlin_python.structure.graph import Graph
-from utils.session import createRdsSession, commitRds
-from utils.validation import validate_uuid, checkIfTableExists
- 
+from utils.session import create_rds_session, commit_rds
+from utils.validation import check_if_table_exists
+
+
 class MigrateCat:
     def __init__(self):
-        self.engine = rdsConnect()
-        self.neptune_engine = neptuneConnect()
+        self.engine = rds_connect()
+        self.neptune_engine = neptune_connect()
         self.g = Graph().traversal().withRemote(self.neptune_engine)
         self.table = "Cat"
 
-    def createmigrateCatTable(self):
-        print(f'Creating {self.table} Table ...')
-        Cat.tableLaunch()
-        print(f'{self.table} Table Created')
+    def create_migrate_cat_table(self):
+        print(f"Creating {self.table} Table ...")
+        Cat.table_launch()
+        print(f"{self.table} Table Created")
 
-    def migrateCat(self):
-        checkIfTableExists(self.engine, self.table)
-        self.createmigrateCatTable()
-        print(f'Starting Migration for {self.table} table ...')
+    def migrate_cat(self):
+        check_if_table_exists(self.engine, self.table)
+        self.create_migrate_cat_table()
+        print(f"Starting Migration for {self.table} table ...")
+        session = create_rds_session()
+        vertex_ids = [v.id for v in self.g.V().hasLabel("cat").toList()]
+        for vertex_id in vertex_ids:
+            cats_to_add = []
+            blocks_vertices = self.g.V(vertex_id).out("blocks").toList()
+            blocks_ids = [vertex.id for vertex in blocks_vertices]
 
-        vertexIds = [v.id for v in self.g.V().hasLabel("cat").toList()]
-        vertexIterate = iter(vertexIds)
+            handling_required_by_vertices = (
+                self.g.V(vertex_id).out("handling_required_by").toList()
+            )
+            handling_required_by_ids = [
+                vertex.id for vertex in handling_required_by_vertices
+            ]
 
-        while True:
             try:
-                vertexId = next(vertexIterate)    
-                blocks_vertices = self.g.V(vertexId).out("blocks").toList()
-                blocks_ids = [vertex.id for vertex in blocks_vertices]
+                for blocks_id in blocks_ids:
+                    cat = Cat(
+                        cat_id=vertex_id,
+                        blocks=blocks_id,
+                        handling_required_by=None,
+                    )
+                    cats_to_add.append(cat)
+                for handling_required_by_id in handling_required_by_ids:
+                    cat = Cat(
+                        cat_id=vertex_id,
+                        blocks=None,
+                        handling_required_by=handling_required_by_id,
+                    )
+                    cats_to_add.append(cat)
+            except Exception as e:
+                print(f"Failed due to {str(e)}")
+            session.add_all(cats_to_add)
+        session.commit()
 
-                handling_required_by_vertices = self.g.V(vertexId).out("handling_required_by").toList()
-                handling_required_by_ids = [vertex.id for vertex in handling_required_by_vertices]
-
-                try:
-                    session = createRdsSession()
-                    for blocks_id in blocks_ids:
-                        if validate_uuid(blocks_id):
-                            cat = Cat(
-                                cat_id=vertexId,
-                                blocks=blocks_id,
-                                handling_required_by=None,
-                            )
-                            session.add(cat)
-                        else:
-                            print(f'Invalid UUID Detected {blocks_id} ... Skipping.')
-
-                    for handling_required_by_id in handling_required_by_ids:
-                        if validate_uuid(handling_required_by_id):                            
-                            cat = Cat(
-                                cat_id=vertexId,
-                                blocks=None,
-                                handling_required_by=handling_required_by_id,
-                            )
-                            session.add(cat)
-                        else:
-                            print(f'Invalid UUID Detected {handling_required_by_id} ... Skipping.')       
-                    commitRds(session)
-                    
-                except Exception as e:
-                    print(f'Failed due to {str(e)}')
-            
-            except StopIteration:
-                break
 
 migrate_review = MigrateCat()
-migrate_review.migrateCat()
+migrate_review.migrate_cat()
